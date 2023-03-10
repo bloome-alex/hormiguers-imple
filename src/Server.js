@@ -1,6 +1,10 @@
 import express from 'express'
 import logger from '../settings/logger'
+
 import BaseRoutes from './modules/base'
+import UserRoutes from './modules/user'
+
+import requestLoggerMiddleware from './modules/base/middlewares/requestLogger'
 
 class Server {
     constructor(port){
@@ -30,13 +34,15 @@ class Server {
 
     middlewares(){
         // Adding the JSON middleware to parse incoming requests as JSON
-        this.app.use(express.json())
         this.app.use(express.static('public'))
+        this.app.use(express.json())
+        this.app.use('/api', requestLoggerMiddleware)
     }
 
     routes(){
         // Adding the base routes to the express app
-        this.app.use(BaseRoutes)
+        this.app.use('/api', BaseRoutes)
+        this.app.use('/api/user', UserRoutes)
     }
 
     start(){
